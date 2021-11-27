@@ -6,7 +6,7 @@ from flask_mysqldb import MySQL
 app = Flask(__name__)
 
 # Mysql Connection
-app.config['MYSQL_HOST'] = 'us-cdbr-east-04.cleardb.com' 
+app.config['MYSQL_HOST'] = 'us-cdbr-east-04.cleardb.com'
 app.config['MYSQL_USER'] = 'baf8d5ac3debb5'
 app.config['MYSQL_PASSWORD'] = '5b136e8f'
 app.config['MYSQL_DB'] = 'heroku_97268bb8b0abec4'
@@ -30,26 +30,24 @@ def add_contact():
     if request.method == 'POST':
         usuario = {
             "nombre": request.json["nombre"],
-            "apellidoP": request.json["apellidoP"],           
-            "apellidoM": request.json["apellidoM"],            
+            "apellidoP": request.json["apellidoP"],
+            "apellidoM": request.json["apellidoM"],
             "dni": request.json["dni"],
             "contrasena": request.json["contrasena"],
             "tipoUsuario": request.json["tipoUsuario"],
             "correo": request.json["correo"]
         }
 
-        # cur = mysql.connection.cursor()
-        # cur.execute('CALL heroku_97268bb8b0abec4.registrarpaciente2(%s,%s,%s,%s,%s,%s, %s);', (usuario["nombre"], usuario["apellidoP"], usuario["apellidoM"], usuario["dni"], usuario["contrasena"], usuario["tipoUsuario"], usuario["correo"]))
-        # # data = cur.fetchall()
-        # cur.close()
-        # mysql.connection.commit()
-        # cur = mysql.connection.cursor()
-        # dni = "76228867"
-        # print(dni)
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM user Where dni=%r', (76228867))
-        data = cur.fetchall()
-        cur.close()
+        cur1 = mysql.connection.cursor()
+        cur1.execute('CALL heroku_97268bb8b0abec4.registrarpaciente2(%s,%s,%s,%s,%s,%s, %s);', (usuario["nombre"], usuario["apellidoP"], usuario["apellidoM"], usuario["dni"], usuario["contrasena"], usuario["tipoUsuario"], usuario["correo"]))
+        # data = cur.fetchall()
+        # cur1.close()
+        mysql.connection.commit()
+
+        cur2 = mysql.connection.cursor()
+        cur2.execute('SELECT * FROM user Where dni=%s', [usuario['dni']])
+        data = cur2.fetchall()
+        cur2.close()
         print(data)
         return jsonify(data)
 
