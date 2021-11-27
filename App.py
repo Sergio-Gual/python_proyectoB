@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, json, render_template, request, redirect, url_for, flash,  jsonify
 from flask_mysqldb import MySQL
+
 
 # initializations
 app = Flask(__name__)
 
 # Mysql Connection
-app.config['MYSQL_HOST'] = 'localhost' 
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'password'
-app.config['MYSQL_DB'] = 'flaskcrud'
+app.config['MYSQL_HOST'] = 'us-cdbr-east-04.cleardb.com' 
+app.config['MYSQL_USER'] = 'baf8d5ac3debb5'
+app.config['MYSQL_PASSWORD'] = '5b136e8f'
+app.config['MYSQL_DB'] = 'heroku_97268bb8b0abec4'
 mysql = MySQL(app)
 
 # settings
@@ -18,22 +19,40 @@ app.secret_key = "mysecretkey"
 @app.route('/')
 def Index():
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM contacts')
+    cur.execute('SELECT * FROM user')
     data = cur.fetchall()
     cur.close()
-    return render_template('index.html', contacts = data)
+    print(data)
+    return jsonify(data)
 
-@app.route('/add_contact', methods=['POST'])
+@app.route('/register', methods=['POST'])
 def add_contact():
     if request.method == 'POST':
-        fullname = request.form['fullname']
-        phone = request.form['phone']
-        email = request.form['email']
+        usuario = {
+            "nombre": request.json["nombre"],
+            "apellidoP": request.json["apellidoP"],           
+            "apellidoM": request.json["apellidoM"],            
+            "dni": request.json["dni"],
+            "contrasena": request.json["contrasena"],
+            "tipoUsuario": request.json["tipoUsuario"],
+            "correo": request.json["correo"]
+        }
+
+        # cur = mysql.connection.cursor()
+        # cur.execute('CALL heroku_97268bb8b0abec4.registrarpaciente2(%s,%s,%s,%s,%s,%s, %s);', (usuario["nombre"], usuario["apellidoP"], usuario["apellidoM"], usuario["dni"], usuario["contrasena"], usuario["tipoUsuario"], usuario["correo"]))
+        # # data = cur.fetchall()
+        # cur.close()
+        # mysql.connection.commit()
+        # cur = mysql.connection.cursor()
+        # dni = "76228867"
+        # print(dni)
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO contacts (fullname, phone, email) VALUES (%s,%s,%s)", (fullname, phone, email))
-        mysql.connection.commit()
-        flash('Contact Added successfully')
-        return redirect(url_for('Index'))
+        cur.execute('SELECT * FROM user Where dni=%r', (76228867))
+        data = cur.fetchall()
+        cur.close()
+        print(data)
+        return jsonify(data)
+
 
 @app.route('/edit/<id>', methods = ['POST', 'GET'])
 def get_contact(id):
@@ -72,4 +91,4 @@ def delete_contact(id):
 
 # starting the app
 if __name__ == "__main__":
-    app.run(port=3000, debug=True)
+    app.run(port=3003, debug=True)
