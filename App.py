@@ -1,10 +1,11 @@
 from flask import Flask, json, render_template, request, redirect, url_for, flash,  jsonify
 from flask_mysqldb import MySQL
 
+from flask_cors import CORS
 
 # initializations
 app = Flask(__name__)
-
+CORS(app)
 # Mysql Connection
 app.config['MYSQL_HOST'] = 'us-cdbr-east-04.cleardb.com'
 app.config['MYSQL_USER'] = 'baf8d5ac3debb5'
@@ -27,6 +28,7 @@ def Index():
 
 @app.route('/register', methods=['POST'])
 def add_contact():
+    print(request.json)
     if request.method == 'POST':
         usuario = {
             "nombre": request.json["nombre"],
@@ -34,7 +36,7 @@ def add_contact():
             "apellidoM": request.json["apellidoM"],
             "dni": request.json["dni"],
             "contrasena": request.json["contrasena"],
-            "tipoUsuario": request.json["tipoUsuario"],
+            "tipoUsuario": 'paciente',
             "correo": request.json["correo"]
         }
 
